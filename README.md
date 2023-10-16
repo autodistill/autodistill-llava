@@ -11,13 +11,13 @@
 
 # Autodistill LLaVA Module
 
-This repository contains the code supporting the CLIP base model for use with [Autodistill](https://github.com/autodistill/autodistill).
+This repository contains the code supporting the LLaVA base model for use with [Autodistill](https://github.com/autodistill/autodistill).
 
-[CLIP](https://github.com/openai/CLIP), developed by OpenAI, is a computer vision model trained using pairs of images and text. You can use CLIP with autodistill for image classification.
+[LLaVA](https://github.com/haotian-liu/LLaVA) is a multi-modal language model with object detection capabilities.  You can use LLaVA with autodistill for object detection. [Learn more about LLaVA 1.5](https://blog.roboflow.com/first-impressions-with-llava-1-5/), the most recent version of LLaVA at the time of releasing this package.
 
 Read the full [Autodistill documentation](https://autodistill.github.io/autodistill/).
 
-Read the [CLIP Autodistill documentation](https://autodistill.github.io/autodistill/base_models/clip/).
+Read the [LLaVA Autodistill documentation](https://autodistill.github.io/autodistill/base_models/llava/).
 
 ## Installation
 
@@ -31,17 +31,16 @@ pip3 install autodistill-clip
 ## Quickstart
 
 ```python
-from autodistill_clip import CLIP
+from autodistill_llava import LLaVA
 
-# define an ontology to map class names to our GroundingDINO prompt
+# define an ontology to map class names to our LLaVA prompt
 # the ontology dictionary has the format {caption: class}
 # where caption is the prompt sent to the base model, and class is the label that will
 # be saved for that caption in the generated annotations
 # then, load the model
-base_model = CLIP(
+base_model = LLaVA(
     ontology=CaptionOntology(
         {
-            "person": "person",
             "a forklift": "forklift"
         }
     )
@@ -52,7 +51,7 @@ base_model.label("./context_images", extension=".jpeg")
 
 ## License
 
-[add license information here]
+This model is licensed under an [Apache 2.0 License](LICENSE).
 
 ## 🏆 Contributing
 

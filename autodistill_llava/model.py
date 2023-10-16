@@ -1,6 +1,8 @@
 import os
 import sys
+
 from dataclasses import dataclass
+import numpy as np
 
 import torch
 
@@ -110,16 +112,7 @@ class LLaVA(DetectionBaseModel):
         result = []
 
         for object in objects:
-
-            prompt = f"""
-    Detect all {object} in the image. Return coordinates in x0, y0, x1, y1 format like:
-
-    object, 0, 0, 0, 0
-
-    There should be one object per line. If there are no detections, return an empty string.
-    """
-
-            input = object.lower().strip()
+            inp = f"""Detect all {object} in the image. Return coordinates in x0, y0, x1, y1 format like: object, 0, 0, 0, 0. There should be one object per line. If there are no detections, say STOP."""
 
             if image is not None:
                 if self.model.config.mm_use_im_start_end:
@@ -132,8 +125,10 @@ class LLaVA(DetectionBaseModel):
                 self.conv.append_message(self.conv.roles[0], inp)
 
             self.conv.append_message(self.conv.roles[1], None)
-            
+
             prompt = self.conv.get_prompt()
+
+            print(prompt)
 
             input_ids = tokenizer_image_token(prompt, self.tokenizer, IMAGE_TOKEN_INDEX, return_tensors='pt').unsqueeze(0).cuda()
             stop_str = self.conv.sep if self.conv.sep_style != SeparatorStyle.TWO else self.conv.sep2
@@ -158,19 +153,44 @@ class LLaVA(DetectionBaseModel):
 
             outputs = outputs.split('\n')
 
+            print(outputs)
+
             for line in outputs:
                 line = line.strip()
 
+                # remove all characters that aren't numbers, a period, a comma
+                line = ''.join([c for c in line if c in '0123456789.,'])
+
                 if line == '':
                     continue
+
                 line = line.split(',')
 
-                result.append({
-                    'label': line[0],
-                    'x0': float(line[1]),
-                    'y0': float(line[2]),
-                    'x1': float(line[3]),
-                    'y1': float(line[4])
-                })
+                # if response is malformed, skip to next prompt
+                try:
+                    result.append({
+                        'label': object,
+                        'x0': float(line[0]),
+                        'y0': float(line[1]),
+                        'x1': float(line[2]),
+                        'y1': float(line[3])
+                    })
+                except Exception as e:
+                    print(e)
+                    continue
 
-        return sv.Detections(outputs, self.ontology)
+            if stop_str in self.conv.messages[-1][-1] or "STOP" in self.conv.messages[-1][-1]:
+                continue
+
+        if len(result) == 0:
+            return sv.Detections.empty()
+        
+        print([[d['x0'], d['y0'], d['x1'], d['y1']] for d in result])
+
+        detections = sv.Detections(
+            xyxy=np.array([[d['x0'], d['y0'], d['x1'], d['y1']] for d in result]),
+            class_id=np.array([self.ontology.prompts().index(d['label']) for d in result]),
+            confidence=np.array([1.0 for _ in result]),
+        )
+
+        return detections

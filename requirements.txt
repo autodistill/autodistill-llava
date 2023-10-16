@@ -1,0 +1,8 @@
+torch
+autodistill
+accelerate
+bitsandbytes
+sentencepiece
+einops
+transformers
+protobuf

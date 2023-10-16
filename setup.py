@@ -2,7 +2,7 @@ import setuptools
 from setuptools import find_packages
 import re
 
-with open("./autodistill_base_model/__init__.py", 'r') as f:
+with open("./autodistill_llava/__init__.py", 'r') as f:
     content = f.read()
     # from https://www.py4u.net/discuss/139845
     version = re.search(r'__version__\s*=\s*[\'"]([^\'"]*)[\'"]', content).group(1)
@@ -11,11 +11,11 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="autodistill-base-model",
+    name="autodistill-llava",
     version=version,
-    author="",
-    author_email="",
-    description="Model for use with Autodistill",
+    author="Roboflow",
+    author_email="support@roboflow.com",
+    description="LLaVA for use with Autodistill",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="",

@@ -21,7 +21,7 @@ Read the [LLaVA Autodistill documentation](https://autodistill.github.io/autodis
 
 ## Installation
 
-To use CLIP with autodistill, you need to install the following dependency:
+To use LLaVA with autodistill, you need to install the following dependency:
 
 
 ```bash

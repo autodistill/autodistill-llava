@@ -25,7 +25,7 @@ To use CLIP with autodistill, you need to install the following dependency:
 
 
 ```bash
-pip3 install autodistill-clip
+pip3 install autodistill-llava
 ```
 
 ## Quickstart
